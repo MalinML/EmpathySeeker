@@ -1,0 +1,44 @@
+[tool.poetry]
+authors = ["Malin <szyszka45@gmail.com>"]
+description = ""
+name = ""
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+coai-base = {git = "https://github.com/TsinghuaCoAI/base.git"}
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool.dephell.main]
+from = {format = "poetry", path = "pyproject.toml"}
+to = {format = "setuppy", path = "setup.py"}
+
+[tool.black]
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+line-length = 150
+target-version = ['py37']
+
+[tool.isort]
+multi_line_output = 3
+profile = "black"
+
+[flake8]
+exclude = '''
+    .git
+    __pycache__
+    '''
