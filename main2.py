@@ -45,6 +45,7 @@ class Args(Tap):
     num_train_epochs: int = 5
     gradient_accumulation_steps: int = 1
     max_len: int = 64
+    eval_steps: int = 300
 
 
 args = Args().parse_args()
@@ -135,7 +136,7 @@ def compute_metrics(p):
 args = TrainingArguments(
     output_dir="output",
     evaluation_strategy="steps",
-    eval_steps=100,
+    eval_steps=args.eval_steps,
     per_device_train_batch_size=args.batch_size,
     per_device_eval_batch_size=args.batch_size,
     num_train_epochs=args.num_train_epochs,
