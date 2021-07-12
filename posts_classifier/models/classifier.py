@@ -17,7 +17,7 @@ class Bert(torch.nn.Module):
         super(Bert, self).__init__()
         self.bert = BertModel.from_pretrained("bert-base-uncased", cache_dir="cached")
         self.dropout = torch.nn.Dropout(0.2)
-        self.linear = torch.nn.Linear(768, 8)
+        self.linear = torch.nn.Linear(768, 26)
 
     def forward(self, input_ids):
         outputs = self.bert(input_ids)

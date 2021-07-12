@@ -24,7 +24,7 @@ class Args(Tap, TrainerArguments):
     dataset: str = "data/small.csv"
     output_dir: str = "output/bert"
     cache_dir: str = "cached"
-    batch_size: int = 1
+    batch_size: int = 8
     n_gpu: int = torch.cuda.device_count()
     device: Union[str, torch.device] = resolve_device()
     learning_rate: float = 5e-5
@@ -38,6 +38,7 @@ class Args(Tap, TrainerArguments):
     save_steps: int = 50000
     num_train_epochs: int = 5
     gradient_accumulation_steps: int = 1
+    max_len: int = 64
 
 
 args = Args().parse_args()
@@ -61,7 +62,7 @@ def prepare_posts_classification() -> TaskData:
     model.to(args.device)
 
     # Dataset
-    dataset = RedditDataset(tokenizer, args.dataset, logger)
+    dataset = RedditDataset(tokenizer, args.dataset, logger, max_len=args.max_len)
     collate_fn = create_collate()
 
     return tokenizer, model, dataset, collate_fn
