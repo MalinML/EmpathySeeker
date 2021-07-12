@@ -73,6 +73,11 @@ from posts_classifier.models.classifier import ClassifierValidator as Validator
 from posts_classifier.models.classifier import Tester
 
 
+def classifier_fn(outputs, labels):
+    print(outputs)
+    raise Exception()
+
+
 def main():
     tokenizer, model, dataset, collate_fn = prepare_posts_classification()
 
