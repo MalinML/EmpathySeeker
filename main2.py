@@ -120,6 +120,7 @@ train_dataset, eval_dataset, test_dataset = random_split(dataset, [train_size, e
 
 
 def compute_metrics(p):
+    return {"accuracy": 0, "precision": 0, "recall": 0, "f1": 0}
     pred, labels = p
     pred = np.argmax(pred, axis=1)
 
