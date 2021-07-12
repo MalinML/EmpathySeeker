@@ -31,6 +31,23 @@ from torch import LongTensor
 from torch.utils.data import Dataset
 from transformers.tokenization_utils import PreTrainedTokenizer
 
+
+class Args(Tap):
+    model_name: str = "bert-base-uncased"
+    dataset: str = "data/small.csv"
+    output_dir: str = "output/bert"
+    cache_dir: str = "cached"
+    batch_size: int = 8
+    max_steps: int = -1
+    warmup_steps: int = 0
+    log_steps: int = 1000
+    save_steps: int = 50000
+    num_train_epochs: int = 5
+    gradient_accumulation_steps: int = 1
+    max_len: int = 64
+
+
+args = Args().parse_args()
 labels = [
     "EX0ER0IR0",
     "EX0ER0IR1",
@@ -71,11 +88,6 @@ class RedditDataset(Dataset):
     def __init__(self, tokenizer: PreTrainedTokenizer, data_path: str, max_len: int = 512,) -> None:
         self.tokenizer = tokenizer
         data = pd.read_csv(data_path).dropna()
-        for x in data["text"].to_list():
-            try:
-                x.lower()
-            except:
-                print(x)
         text_input = [
             tokenizer(x.lower(), max_length=max_len, padding="max_length", truncation=True, add_special_tokens=True, return_token_type_ids=True,)
             for x in data["text"].to_list()
@@ -108,7 +120,6 @@ train_dataset, eval_dataset, test_dataset = random_split(dataset, [train_size, e
 
 
 def compute_metrics(p):
-    print(p)
     pred, labels = p
     pred = np.argmax(pred, axis=1)
 
@@ -123,10 +134,10 @@ def compute_metrics(p):
 args = TrainingArguments(
     output_dir="output",
     evaluation_strategy="steps",
-    eval_steps=500,
-    per_device_train_batch_size=4,
-    per_device_eval_batch_size=4,
-    num_train_epochs=3,
+    eval_steps=100,
+    per_device_train_batch_size=args.batch_size,
+    per_device_eval_batch_size=args.batch_size,
+    num_train_epochs=args.num_train_epochs,
     seed=0,
     load_best_model_at_end=True,
 )
