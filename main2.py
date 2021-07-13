@@ -112,7 +112,7 @@ class RedditDataset(Dataset):
         }
 
 
-dataset = RedditDataset(tokenizer, "./data/small.csv", max_len=126)
+dataset = RedditDataset(tokenizer, args.dataset, max_len=126)
 dataset_size = len(dataset)  # type: ignore
 train_size = int(0.7 * dataset_size)
 eval_size = int(0.1 * dataset_size)
