@@ -100,11 +100,12 @@ def main():
     )
     trainer = Trainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=eval_dataset, compute_metrics=compute_metrics,)
     if args.do_train:
-        logger.info("*** Train ***")
+        print("*** Train ***")
         trainer.train()
     if args.do_eval:
+        print("*** Eval ***")
         metrics = trainer.evaluate(eval_dataset=eval_dataset)
         print(metrics)
 
-    print('ALL DONE')
+    print("ALL DONE")
 
