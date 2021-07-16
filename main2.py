@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 import torch
 from transformers import TrainingArguments, Trainer, EvalPrediction
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Literal, Optional, Tuple, Union
 
 import pandas as pd
 import torch
@@ -32,8 +32,7 @@ from transformers.tokenization_utils import PreTrainedTokenizer
 logger = get_logger("main.log")  # Logger
 
 
-class DatasetType(Enum):
-    ALL_LABELS = 1  # all 26 labels
+ALL_LABELS_DATATYPE = "ALL_LABELS"
 
 
 class Args(Tap):
@@ -48,7 +47,7 @@ class Args(Tap):
     do_train: bool = False
     do_eval: bool = False
     do_test: bool = False
-    data_type: Optional[DatasetType] = None
+    data_type: Literal[ALL_LABELS_DATATYPE]
 
 
 set_seed()
@@ -67,8 +66,8 @@ def compute_metrics(p: EvalPrediction):
     return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}
 
 
-def get_dataset(type: Optional[DatasetType], tokenizer, data_path):
-    if type == DatasetType.ALL_LABELS:
+def get_dataset(type: Optional[str], tokenizer, data_path):
+    if type == ALL_LABELS_DATATYPE:
         from posts_classifier.datasets.reddit_all_classes import RedditDataset
 
         dataset = RedditDataset(tokenizer, data_path)
