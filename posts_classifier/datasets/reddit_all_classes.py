@@ -39,15 +39,9 @@ labels = {x: i for i, x in enumerate(labels)}
 
 
 class RedditDataset(Dataset):
-    def __init__(self, tokenizer: PreTrainedTokenizer, data_path: str, logger, max_len: int = 512,) -> None:
-        logger.info("Loading dataset")
+    def __init__(self, tokenizer: PreTrainedTokenizer, data_path: str, max_len: int = 512,) -> None:
         self.tokenizer = tokenizer
         data = pd.read_csv(data_path).dropna()
-        for x in data["text"].to_list():
-            try:
-                x.lower()
-            except:
-                print(x)
         text_input = [
             tokenizer(x.lower(), max_length=max_len, padding="max_length", truncation=True, add_special_tokens=True, return_token_type_ids=True,)
             for x in data["text"].to_list()
@@ -57,32 +51,14 @@ class RedditDataset(Dataset):
         ex = ["EX" + str(mapper(x)) for x in data["ex"].to_list()]
         er = ["ER" + str(mapper(x)) for x in data["er"].to_list()]
         ir = ["IR" + str(mapper(x)) for x in data["ir"].to_list()]
-        self.labels = ["".join(x) for x in zip(ex, er, ir)]
-
-        self.labels = pd.get_dummies(self.labels).values
-        print("We have ", len(self.labels[0]), "labels")
-        logger.info("Dataset loaded")
+        self.labels = [labels["".join(x)] for x in zip(ex, er, ir)] 
 
     def __len__(self):
         return len(self.labels)
 
     def __getitem__(self, idx: Union[LongTensor, int, List[int]]) -> Dict[str, Any]:
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
         return {
             "input_ids": self.input_ids[idx],
             "labels": self.labels[idx],
         }
 
-
-# Collate function
-def create_collate():
-    def collate_fn(batch):
-        # Inputs
-        input_ids = torch.LongTensor([f["input_ids"] for f in batch])
-        # Labels
-        labels = torch.FloatTensor([f["labels"] for f in batch])
-
-        return input_ids, labels
-
-    return collate_fn
