@@ -109,3 +109,6 @@ def main():
 
     print("ALL DONE")
 
+
+if __name__ == "__main__":
+    main()
