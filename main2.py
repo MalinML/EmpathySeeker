@@ -37,6 +37,7 @@ ALL_LABELS_DATATYPE = "ALL_LABELS"
 
 class Args(Tap):
     model_name: str = "bert-base-uncased"
+    model_override_name: str = "bert-base-uncased"
     dataset: str = "data/small.csv"
     output_dir: str = "output/bert"
     cache_dir: str = "cached"
@@ -86,7 +87,7 @@ def main():
     args = Args().parse_args()
 
     logger = get_logger("{}.log".format(args.model_name.split("/")[-1]))  # Logger
-    model, tokenizer = get_all_labels_classifier(args.model_name)
+    model, tokenizer = get_all_labels_classifier(args.model_override_name, args.model_name)
     train_dataset, eval_dataset, test_dataset = get_dataset(args.data_type, tokenizer, args.dataset)
     training_args = TrainingArguments(
         output_dir="output",
