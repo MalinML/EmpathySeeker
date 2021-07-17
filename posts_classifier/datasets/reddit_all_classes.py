@@ -44,7 +44,8 @@ class RedditDataset(Dataset):
         self.max_len = max_len
         self.tokenizer = tokenizer
         loading_start = time.time()
-        data = pd.read_csv(data_path)
+        cols = ["text", "ir", "er", "ex"]
+        data = pd.read_csv(data_path, usecols=cols)
         print(f"Loading took {time.time()-loading_start}")
 
         data["text"] = data["text"].str.lower()

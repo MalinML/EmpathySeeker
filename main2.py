@@ -14,7 +14,7 @@ import pandas as pd
 import torch
 from tap.tap import Tap
 from torch.utils.data import random_split
-from torch.utils.data.dataloader import T
+from torch.utils.data.dataloader import DataLoader, T
 from torch.utils.data.dataset import Dataset
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils import PreTrainedTokenizer
@@ -86,6 +86,7 @@ def main():
     model, tokenizer = get_all_labels_classifier(args.model_name, args.model_override_name)
     print("Model and tokenizer loaded.")
     train_dataset = get_dataset(args.data_type, tokenizer, f"data/train_{args.dataset}")
+    train_dataset = DataLoader(train_dataset, num_workers=5)
     eval_dataset = get_dataset(args.data_type, tokenizer, f"data/eval_{args.dataset}")
     print("Dataset loaded.")
     training_args = TrainingArguments(
