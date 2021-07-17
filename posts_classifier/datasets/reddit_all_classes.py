@@ -40,7 +40,7 @@ labels = {x: i for i, x in enumerate(labels)}
 
 
 class RedditDataset(Dataset):
-    def __init__(self, tokenizer: PreTrainedTokenizer, data_path: str, max_len: int = 512,) -> None:
+    def __init__(self, tokenizer: PreTrainedTokenizer, data_path: str, max_len: int = 128,) -> None:
         self.max_len = max_len
         self.tokenizer = tokenizer
         loading_start = time.time()
