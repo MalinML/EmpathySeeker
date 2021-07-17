@@ -37,7 +37,7 @@ ALL_LABELS_DATATYPE = "ALL_LABELS"
 
 class Args(Tap):
     model_name: str = "bert-base-uncased"
-    model_override_name: str = "bert-base-uncased"
+    model_override_name: Optional[str] = None
     dataset: str = "data/small.csv"
     output_dir: str = "output/bert"
     cache_dir: str = "cached"
@@ -68,6 +68,7 @@ def compute_metrics(p: EvalPrediction):
 
 
 def get_dataset(type: Optional[str], tokenizer, data_path):
+    print("Loading dataset")
     if type == ALL_LABELS_DATATYPE:
         from posts_classifier.datasets.reddit_all_classes import RedditDataset
 
@@ -79,16 +80,20 @@ def get_dataset(type: Optional[str], tokenizer, data_path):
     eval_size = int(0.1 * dataset_size)
     test_size = dataset_size - (train_size + eval_size)
     train_dataset, eval_dataset, test_dataset = random_split(dataset, [train_size, eval_size, test_size])
+    print("Dataset loaded and split")
     return train_dataset, eval_dataset, test_dataset
 
 
 def main():
     global logger
     args = Args().parse_args()
+    print("Main starting")
 
     logger = get_logger("{}.log".format(args.model_name.split("/")[-1]))  # Logger
-    model, tokenizer = get_all_labels_classifier(args.model_override_name, args.model_name)
+    model, tokenizer = get_all_labels_classifier(args.model_name, args.model_override_name)
+    print("Model and tokenizer loaded.")
     train_dataset, eval_dataset, test_dataset = get_dataset(args.data_type, tokenizer, args.dataset)
+    print("Dataset loaded.")
     training_args = TrainingArguments(
         output_dir="output",
         evaluation_strategy="epoch",
