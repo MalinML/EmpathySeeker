@@ -38,7 +38,7 @@ ALL_LABELS_DATATYPE = "ALL_LABELS"
 class Args(Tap):
     model_name: str = "bert-base-uncased"
     model_override_name: Optional[str] = None
-    dataset: str = "data/small.csv"
+    dataset: str = "small.csv"
     output_dir: str = "output/bert"
     cache_dir: str = "cached"
     batch_size: int = 8
@@ -72,16 +72,9 @@ def get_dataset(type: Optional[str], tokenizer, data_path):
     if type == ALL_LABELS_DATATYPE:
         from posts_classifier.datasets.reddit_all_classes import RedditDataset
 
-        dataset = RedditDataset(tokenizer, data_path)
+        return RedditDataset(tokenizer, data_path)
     else:
         raise ValueError(f"Unknown data type {type}")
-    dataset_size = len(dataset)  # type: ignore
-    train_size = int(0.7 * dataset_size)
-    eval_size = int(0.1 * dataset_size)
-    test_size = dataset_size - (train_size + eval_size)
-    train_dataset, eval_dataset, test_dataset = random_split(dataset, [train_size, eval_size, test_size])
-    print("Dataset loaded and split")
-    return train_dataset, eval_dataset, test_dataset
 
 
 def main():
@@ -92,7 +85,8 @@ def main():
     logger = get_logger("{}.log".format(args.model_name.split("/")[-1]))  # Logger
     model, tokenizer = get_all_labels_classifier(args.model_name, args.model_override_name)
     print("Model and tokenizer loaded.")
-    train_dataset, eval_dataset, test_dataset = get_dataset(args.data_type, tokenizer, args.dataset)
+    train_dataset = get_dataset(args.data_type, tokenizer, f"data/train_{args.dataset}")
+    eval_dataset = get_dataset(args.data_type, tokenizer, f"data/eval_{args.dataset}")
     print("Dataset loaded.")
     training_args = TrainingArguments(
         output_dir="output",
