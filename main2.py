@@ -96,6 +96,7 @@ def main():
         num_train_epochs=args.num_train_epochs,
         seed=0,
         load_best_model_at_end=True,
+        dataloader_num_workers=5,
     )
     trainer = Trainer(
         model=model,
@@ -103,7 +104,6 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         compute_metrics=compute_metrics,
-        dataloader_num_workers=5,
     )
     if args.do_train:
         print("*** Train ***")
