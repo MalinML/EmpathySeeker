@@ -41,6 +41,7 @@ labels = {x: i for i, x in enumerate(labels)}
 
 class RedditDataset(Dataset):
     def __init__(self, tokenizer: PreTrainedTokenizer, data_path: str, max_len: int = 512,) -> None:
+        self.max_len = max_len
         self.tokenizer = tokenizer
         loading_start = time.time()
         data = pd.read_csv(data_path)
@@ -49,14 +50,9 @@ class RedditDataset(Dataset):
         data["text"] = data["text"].str.lower()
 
         tok_start = time.time()
-
-        text_input = [
-            tokenizer(x, max_length=max_len, padding="max_length", truncation=True, add_special_tokens=True, return_token_type_ids=True,)
-            for x in data["text"].to_list()
-        ]
+        self.text_input = data["text"].to_list()
         print(f"Tokenizer took {time.time() - tok_start}")
 
-        self.input_ids = [input["input_ids"] for input in text_input]
         mapper = lambda x: 2 if x >= 1.5 else (1 if x >= 0.5 else 0)
         ex = ["EX" + str(mapper(x)) for x in data["ex"].to_list()]
         er = ["ER" + str(mapper(x)) for x in data["er"].to_list()]
@@ -67,8 +63,13 @@ class RedditDataset(Dataset):
         return len(self.labels)
 
     def __getitem__(self, idx: Union[LongTensor, int, List[int]]) -> Dict[str, Any]:
+        input_text = self.text_input[idx]
+        tokenized_input = self.tokenizer(input_text, max_length=self.max_len, padding="max_length", truncation=True, add_special_tokens=True)[
+            "input_ids"
+        ]
+
         return {
-            "input_ids": self.input_ids[idx],
+            "input_ids": tokenized_input,
             "labels": self.labels[idx],
         }
 
