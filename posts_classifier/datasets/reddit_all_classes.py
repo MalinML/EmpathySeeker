@@ -59,6 +59,7 @@ class RedditDataset(Dataset):
         er = ["ER" + str(mapper(x)) for x in data["er"].to_list()]
         ir = ["IR" + str(mapper(x)) for x in data["ir"].to_list()]
         self.labels = [labels["".join(x)] for x in zip(ex, er, ir)]
+        print(f"Dataset initialization took {time.time() -loading_start}")
 
     def __len__(self):
         return len(self.labels)

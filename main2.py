@@ -86,7 +86,6 @@ def main():
     model, tokenizer = get_all_labels_classifier(args.model_name, args.model_override_name)
     print("Model and tokenizer loaded.")
     train_dataset = get_dataset(args.data_type, tokenizer, f"data/train_{args.dataset}")
-    train_dataset = DataLoader(train_dataset, num_workers=5)
     eval_dataset = get_dataset(args.data_type, tokenizer, f"data/eval_{args.dataset}")
     print("Dataset loaded.")
     training_args = TrainingArguments(
@@ -98,7 +97,14 @@ def main():
         seed=0,
         load_best_model_at_end=True,
     )
-    trainer = Trainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=eval_dataset, compute_metrics=compute_metrics,)
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        compute_metrics=compute_metrics,
+        dataloader_num_workers=5,
+    )
     if args.do_train:
         print("*** Train ***")
         trainer.train()
